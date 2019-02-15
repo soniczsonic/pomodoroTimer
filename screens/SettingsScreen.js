@@ -36,6 +36,7 @@ class todoState extends PersistContainer {
   }
 
   state = {
+    formText: '',
     todoList: [{title: 'todo1'}, {title: 'todo2'}],
     doneList: [{title: 'done1'}, {title: 'done2'}],
   }
@@ -43,6 +44,17 @@ class todoState extends PersistContainer {
   increment() {
     this.setState({ count: this.state.count + 1, countHistory: [...this.state.countHistory, { lol: 77 }] });
   }
+
+  onChangeText = (formText) => {
+    console.warn(this.state.formText)
+    this.setState({formText})
+  }
+
+  onEndEditing = async() => {
+    const todoList =  await [{title: this.state.formText}, ...this.state.todoList]
+    this.setState({todoList, formText: ''})
+  }
+
 }
 
 const { height, width } = Dimensions.get('window')
@@ -56,6 +68,7 @@ class HomeScreen extends Component {
     stopDisabled: false,
     isRest: false,
     isRunning: false,
+    formText: '',
   }
 
   componentDidMount = () => {
@@ -102,6 +115,10 @@ class HomeScreen extends Component {
     clearInterval(this.state.timer);
   }
 
+  onEndEditing = () => {
+    this.setState({formText: ''})
+  }
+
   render() {
     const {timerState, todoState} = this.props
     const { counter, isRest, isRunning } = this.state
@@ -112,22 +129,28 @@ class HomeScreen extends Component {
       <View style={styles.container}>
         <View style={styles.timerContainer, {backgroundColor: isRest ? 'green': 'red'}}>
           <View style={styles.counterWrapper}>
-          <Text style={styles.counterText}>{minutes}:{seconds}</Text>
+            <Text style={styles.counterText}>{minutes}:{seconds}</Text>
+          </View>
+          <View styles={styles.buttonWrapper}>
+            {<isRunning></isRunning>
+              ? <Text style={styles.stopButton} onPress={() => this.onButtonStop()}>停止</Text>
+              : <Text style={styles.startButton} onPress={() => this.start()}>開始</Text>}
+            <Text style={styles.resetButton} onPress={() => this.onButtonClear()}>リセット</Text>
+          </View>
         </View>
-        <View styles={styles.buttonWrapper}>
-          {isRunning
-            ? <Text style={styles.stopButton} onPress={() => this.onButtonStop()}>停止</Text>
-            : <Text style={styles.startButton} onPress={() => this.start()}>開始</Text>}
-          <Text style={styles.resetButton} onPress={() => this.onButtonClear()}>リセット</Text>
+
+        <View style={styles.todoContainer}>
+          <View style={styles.TextInput} >
+            <TextInput 
+              onChangeText={(formText) => todoState.onChangeText(formText)}
+              onEndEditing={() => todoState.onEndEditing()}
+              value={todoState.state.formText}/>
+          </View>
+          <Text>TODO</Text>
+          {todoState.state.todoList.map(x => <Text>{x.title}</Text>)}
+          <Text>完了</Text>
+          {todoState.state.doneList.map(x => <Text>{x.title}</Text>)}
         </View>
-      </View>
-      <View style={styles.todoContainer}>
-        <TextInput />
-        <Text>TODO</Text>
-        {todoState.state.todoList.map(x => <Text>{x.title}</Text>)}
-        <Text>完了</Text>
-        {todoState.state.doneList.map(x => <Text>{x.title}</Text>)}
-      </View>
       </View >
     )
   }
@@ -169,6 +192,9 @@ const styles = StyleSheet.create({
     borderWidth: 1,
   },
   resetButton: {
+    borderWidth: 1,
+  },
+  textInput: {
     borderWidth: 1,
   },
   miniCounter: {
