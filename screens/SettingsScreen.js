@@ -8,9 +8,18 @@ import {
   TextInput,
   AsyncStorage,
   FlatList,
+  Image,
+  ScrollView
 } from 'react-native'
 import { Provider, Subscribe, Container } from 'unstated'
 import { PersistContainer } from 'unstated-persist'
+import { Ionicons } from '@expo/vector-icons';
+
+const TodoListItem = (props) => (
+  <View>
+    <Text></Text>
+  </View>
+)
 
 
 class timerState extends PersistContainer {
@@ -37,12 +46,9 @@ class todoState extends PersistContainer {
 
   state = {
     formText: '',
-    todoList: [{title: 'todo1'}, {title: 'todo2'}],
+    // idは0から始まる
+    todoList: [{id: 0, title: 'todo1'}, {id: 1, title: 'todo2'}],
     doneList: [{title: 'done1'}, {title: 'done2'}],
-  }
-
-  increment() {
-    this.setState({ count: this.state.count + 1, countHistory: [...this.state.countHistory, { lol: 77 }] });
   }
 
   onChangeText = (formText) => {
@@ -51,10 +57,13 @@ class todoState extends PersistContainer {
   }
 
   onEndEditing = async() => {
-    const todoList =  await [{title: this.state.formText}, ...this.state.todoList]
+    const todoList =  await [...this.state.todoList, {id: this.state.todoList.length, title: this.state.formText}]
     this.setState({todoList, formText: ''})
   }
 
+  onPressCheck = (id) => {
+
+  }
 }
 
 const { height, width } = Dimensions.get('window')
@@ -126,6 +135,7 @@ class HomeScreen extends Component {
     const seconds = counter % 60
 
     return (
+      <ScrollView>
       <View style={styles.container}>
         <View style={styles.timerContainer, {backgroundColor: isRest ? 'green': 'red'}}>
           <View style={styles.counterWrapper}>
@@ -146,12 +156,24 @@ class HomeScreen extends Component {
               onEndEditing={() => todoState.onEndEditing()}
               value={todoState.state.formText}/>
           </View>
-          <Text>TODO</Text>
-          {todoState.state.todoList.map(x => <Text>{x.title}</Text>)}
-          <Text>完了</Text>
-          {todoState.state.doneList.map(x => <Text>{x.title}</Text>)}
+          <Text style={{alignSelf: 'center', fontSize: 20}}>TODO</Text>
+          {todoState.state.todoList.map(x =>
+            <View style={styles.todoListItem}>
+              <Text style={styles.todoListItemText}>{x.title}</Text>
+              <Ionicons style={{position: 'absolute', right: 40 }} name="md-checkmark" size={22} color="green" />
+              <Ionicons style={{position: 'absolute', right: 20 }} name="ios-trash" size={22} color="green" />
+            </View>
+          )}
+          <Text style={{alignSelf: 'center', fontSize: 20}}>完了</Text>
+          {todoState.state.doneList.map(x => 
+            <View style={styles.doneListItem}>
+              <Text style={styles.todoListItemText}>{x.title}</Text>
+              <Ionicons style={{position: 'absolute', right: 20 }} name="ios-trash" size={22} color="green" />
+            </View>
+          )}
         </View>
-      </View >
+      </View>
+      </ScrollView>
     )
   }
 }
@@ -205,6 +227,18 @@ const styles = StyleSheet.create({
   },
   todoContainer: {
     backgroundColor: 'blue'
+  },
+  todoListItem: {
+    borderTopWidth: 1,
+    flexDirection: 'row',
+    height: 30,
+  },
+  doneListItem: {
+    borderTopWidth: 1,
+    height: 30,
+  },
+  todoListItemText: {
+    fontSize: 20
   }
 });
 
