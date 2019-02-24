@@ -81,7 +81,8 @@ class HomeScreen extends Component {
   miliseconds = 0
   timer = null
   state = {
-    counter: 25 * 60,
+    counter: 3,
+    // counter: 25 * 60,
     startDisabled: true,
     stopDisabled: false,
     isRest: false,
@@ -98,8 +99,10 @@ class HomeScreen extends Component {
   }
 
   componentDidUpdate = (prevProps, prevState) => {
-    if (this.state.counter === 1) {
-      this.setState({isRest: true})
+    if ( prevState.counter !== 0 && this.state.counter === 0) {
+      const nextInterval = this.state.isRest ? 25 * 60 :5 * 60
+      this.setState({counter: nextInterval, isRest: !this.state.isRest, isRunning: false})
+      clearInterval(this.timer)
     }
   }
 
@@ -160,7 +163,7 @@ class HomeScreen extends Component {
               {isRunning
                 ? <Button color='white' mode="outlined" onPress={() => this.onButtonStop()}>停止</Button>
                 : <Button color='white' mode="outlined" onPress={() => this.onButtonStart()}>開始</Button>}
-              <Text style={styles.resetButton} onPress={() => this.onButtonClear()}>リセット</Text>
+              <Text style={styles.resetButton} onPress={() => this.onButtonClear()}>リセット(実装中)</Text>
             </View>
           </View>
           </Card.Content>
