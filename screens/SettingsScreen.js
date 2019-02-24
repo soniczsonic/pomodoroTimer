@@ -13,12 +13,8 @@ import { Provider, Subscribe, Container } from 'unstated'
 import { PersistContainer } from 'unstated-persist'
 import { Ionicons } from '@expo/vector-icons'
 import { Button, List, TextInput, Banner, Card, Title, Paragraph, Avatar, Surface, TouchableRipple, } from 'react-native-paper';
+import TodoListItem from '../components/TodoListItem'
 
-const TodoListItem = (props) => (
-  <View>
-    <Text></Text>
-  </View>
-)
 
 
 class timerState extends PersistContainer {
@@ -179,21 +175,10 @@ class HomeScreen extends Component {
               onEndEditing={() => todoState.onEndEditing()}
               value={todoState.state.formText} />
           </View>
+
           <Text style={{ alignSelf: 'center', fontSize: 20 }}>TODO</Text>
-          {todoState.state.todoList.map(x =>
-            <List.Item
-              title={x.title}
-              // description="Item description"
-              right={props => 
-                <View style={{flexDirection: 'row'}}>
-                  <TouchableRipple onPress={() => todoState.onPressTodoCheck(x)}>
-                    <List.Icon  icon="check" />
-                  </TouchableRipple>
-                  <Ionicons  onPress={() => todoState.onPressTodoTrash(x)} style={{ paddingTop: 20 }} name="ios-trash" size={22} color="green" />
-                </View>
-              }
-            />
-          )}
+          {todoState.state.todoList.map(x =><TodoListItem item={x} todoState={todoState} />)}
+
           <Text style={{ alignSelf: 'center', fontSize: 20 }}>完了</Text>
 
           {todoState.state.doneList.map(x =>
