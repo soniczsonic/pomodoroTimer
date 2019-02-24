@@ -75,17 +75,18 @@ class todoState extends PersistContainer {
 
 const { height, width } = Dimensions.get('window')
 
+// TODO: milisecondsをstateに入れているせいで、不必要なrerenderが１秒に1000回走っているな。
 class HomeScreen extends Component {
+  // 以下二つは、不必要なrerenerを防ぐために、stateには入れない。
+  miliseconds = 0
+  timer = null
   state = {
-    timer: null,
     counter: 25 * 60,
-    miliseconds: 0,
     startDisabled: true,
     stopDisabled: false,
     isRest: false,
     isRunning: false,
     formText: '',
-    visible: true,
   }
 
   componentDidMount = () => {
@@ -93,25 +94,29 @@ class HomeScreen extends Component {
   }
 
   componentWillUnmount = () => {
-    clearInterval(this.state.timer);
+    clearInterval(this.timer)
+  }
+
+  componentDidUpdate = (prevProps, prevState) => {
+    if (this.state.counter === 1) {
+      this.setState({isRest: true})
+    }
   }
 
   start = () => {
     let timer = setInterval(() => {
-      let num = (this.state.miliseconds + 1)
-      let count = this.state.counter
+      this.miliseconds += 1
 
-      if (this.state.miliseconds == 99 && this.state.counter !== 0) {
-        count = (this.state.counter - 1)
-        num = 0
+      if (this.miliseconds == 99 && this.state.counter !== 0) {
+        counter = (this.state.counter - 1)
+        this.miliseconds = 0
+        this.setState({counter: counter})
       }
 
-      this.setState({
-        counter: count,
-        miliseconds: num
-      })
+      // milisecondsはrerenderを減らすためにstateに入れたくない。
     }, 0)
-    this.setState({ timer, isRunning: true });
+    this.setState({ isRunning: true });
+    this.timer = timer
   }
 
   onButtonStart = () => {
@@ -119,17 +124,16 @@ class HomeScreen extends Component {
   }
 
   onButtonStop = () => {
-    console.warn(this.state.timer)
-    clearInterval(this.state.timer);
+    clearInterval(this.timer);
     this.setState({ isRunning: false })
   }
 
   onButtonClear = () => {
     this.setState({
       counter: 100,
-      miliseconds: 0
     })
-    clearInterval(this.state.timer);
+    this.miliseconds = 0
+    clearInterval(this.timer)
   }
 
   onEndEditing = () => {
@@ -140,7 +144,8 @@ class HomeScreen extends Component {
     const { timerState, todoState } = this.props
     const { counter, isRest, isRunning } = this.state
     const minutes = Math.floor(counter / 60)
-    const seconds = counter % 60
+    const seconds = counter % 60 === 0 ? '00' : `${counter % 60}`
+    console.warn('render')
 
     return (
       <View style={styles.container}>
