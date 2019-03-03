@@ -146,7 +146,8 @@ class HomeScreen extends Component {
     const { timerState, todoState } = this.props
     const { counter, isRest, isRunning } = this.state
     const minutes = Math.floor(counter / 60)
-    const seconds = counter % 60 === 0 ? '00' : `${counter % 60}`
+    // 一桁の時に0をたす 
+    const seconds = (counter % 60) < 10 ? `0${counter % 60}` : `${counter % 60}`
     console.warn('render')
 
     return (
