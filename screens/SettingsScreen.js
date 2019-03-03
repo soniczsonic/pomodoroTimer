@@ -24,12 +24,51 @@ class timerState extends PersistContainer {
     storage: AsyncStorage,
   }
 
+  // 以下二つは、不必要なrerenerを防ぐために、stateには入れない。
+  miliseconds = 0
+  timer = null
   state = {
+    counter: 25 * 60,
+    startDisabled: true,
+    stopDisabled: false,
+    isRest: false,
+    isRunning: false,
+    formText: '',
   }
 
-  increment() {
-    this.setState({ count: this.state.count + 1, countHistory: [...this.state.countHistory, { lol: 77 }] });
+  clearInterval = () => {
+    clearInterval(this.timer)
   }
+
+  updateCounterInComponentDidUpdate = (nextInterval) => {
+    this.setState({counter: nextInterval, isRest: !this.state.isRest, isRunning: false})
+  }
+
+  start = () => {
+    let timer = setInterval(() => {
+      this.miliseconds += 1
+
+      if (this.miliseconds == 99 && this.state.counter !== 0) {
+        counter = (this.state.counter - 1)
+        this.miliseconds = 0
+        this.setState({counter: counter})
+      }
+
+    }, 0)
+    this.setState({ isRunning: true });
+    this.timer = timer
+  }
+
+  // setStateを使いやすくした
+  setTimerState = (obj /* object */) => {
+    this.setState(obj)
+  }
+  
+  // clear miliseconds
+  clearMiliseconds = () => {
+    this.miliseconds = 0
+  }
+
 }
 
 class todoState extends PersistContainer {
@@ -47,7 +86,6 @@ class todoState extends PersistContainer {
   }
 
   onChangeText = (formText) => {
-    console.warn(this.state.formText)
     this.setState({ formText })
   }
 
@@ -77,75 +115,46 @@ const { height, width } = Dimensions.get('window')
 
 // TODO: milisecondsをstateに入れているせいで、不必要なrerenderが１秒に1000回走っているな。
 class HomeScreen extends Component {
-  // 以下二つは、不必要なrerenerを防ぐために、stateには入れない。
-  miliseconds = 0
-  timer = null
-  state = {
-    counter: 3,
-    // counter: 25 * 60,
-    startDisabled: true,
-    stopDisabled: false,
-    isRest: false,
-    isRunning: false,
-    formText: '',
-  }
-
-  componentDidMount = () => {
-    // this.start()
-  }
-
   componentWillUnmount = () => {
-    clearInterval(this.timer)
+    this.props.timerState.clearInterval()
   }
 
   componentDidUpdate = (prevProps, prevState) => {
-    if ( prevState.counter !== 0 && this.state.counter === 0) {
-      const nextInterval = this.state.isRest ? 25 * 60 :5 * 60
-      this.setState({counter: nextInterval, isRest: !this.state.isRest, isRunning: false})
-      clearInterval(this.timer)
+    if ( prevProps.timerState.state.counter !== 0 && this.props.timerState.state.counter === 0) {
+      const {timerState} = this.props
+      const nextInterval = timerState.state.isRest ? 25 * 60 :5 * 60
+      timerState.updateCounterInComponentDidUpdate(nextInterval)
+      timerState.clearInterval()
     }
   }
 
-  start = () => {
-    let timer = setInterval(() => {
-      this.miliseconds += 1
-
-      if (this.miliseconds == 99 && this.state.counter !== 0) {
-        counter = (this.state.counter - 1)
-        this.miliseconds = 0
-        this.setState({counter: counter})
-      }
-
-      // milisecondsはrerenderを減らすためにstateに入れたくない。
-    }, 0)
-    this.setState({ isRunning: true });
-    this.timer = timer
-  }
-
   onButtonStart = () => {
-    this.start();
+    this.props.timerState.start()
   }
 
   onButtonStop = () => {
-    clearInterval(this.timer);
-    this.setState({ isRunning: false })
+    const {timerState} = this.props
+    timerState.clearInterval(this.timer);
+    timerState.setTimerState({ isRunning: false })
   }
 
   onButtonClear = () => {
-    this.setState({
+    const {timerState} = this.props
+    timerState.setTimerState({
       counter: 100,
     })
-    this.miliseconds = 0
-    clearInterval(this.timer)
+    timerState.clearMiliseconds()
+    timerState.clearInterval()
   }
 
   onEndEditing = () => {
-    this.setState({ formText: '' })
+    const {timerState} = this.props
+    timerState.setTimerState({ formText: '' })
   }
 
   render() {
     const { timerState, todoState } = this.props
-    const { counter, isRest, isRunning } = this.state
+    const { counter, isRest, isRunning } = timerState.state
     const minutes = Math.floor(counter / 60)
     // 一桁の時に0をたす 
     const seconds = (counter % 60) < 10 ? `0${counter % 60}` : `${counter % 60}`
@@ -168,10 +177,6 @@ class HomeScreen extends Component {
             </View>
           </View>
           </Card.Content>
-          <Card.Actions>
-            <Button>Cancel</Button>
-            <Button>Ok</Button>
-          </Card.Actions>
         </Card>
 
         <ScrollView>
