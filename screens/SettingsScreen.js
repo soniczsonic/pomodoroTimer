@@ -81,8 +81,8 @@ class HomeScreen extends Component {
   miliseconds = 0
   timer = null
   state = {
-    counter: 3,
-    // counter: 25 * 60,
+    // counter: 3,
+    counter: 25 * 60,
     startDisabled: true,
     stopDisabled: false,
     isRest: false,
