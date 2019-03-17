@@ -14,7 +14,9 @@ import Modal from 'react-native-modal'
 import { Provider, Subscribe, Container } from 'unstated'
 import { PersistContainer } from 'unstated-persist'
 import { Ionicons } from '@expo/vector-icons'
-import { Button, List, TextInput, Banner, Card, Title, Paragraph, Avatar, Surface, TouchableRipple, } from 'react-native-paper';
+import { Button, List, TextInput, Banner, Card, Title, Paragraph, Avatar, Surface, TouchableRipple, } from 'react-native-paper'
+import Color from '../assets/color'
+
 import TodoListItem from '../components/TodoListItem'
 import TextInputModal from '../components/TextInputModal'
 
@@ -217,8 +219,9 @@ class HomeScreen extends Component {
 
         </View>
       </ScrollView >
-      <Button icon="add-a-photo" mode="contained" onPress={this.onPressNewTodoItemButton}>
-        Press me
+      <Button mode="contained" color={Color.materialBlue} onPress={this.onPressNewTodoItemButton}>
+        <Ionicons name="ios-add" size={32} color="white" />
+        <Text style={{color: 'white', fontSize: 20}}>新しいタスクを追加</Text>
       </Button>
 
       <Modal
@@ -230,7 +233,7 @@ class HomeScreen extends Component {
 
       </View>
     )
-  }
+  } 
 }
 
 
