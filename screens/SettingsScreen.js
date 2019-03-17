@@ -220,9 +220,12 @@ class HomeScreen extends Component {
       <Button icon="add-a-photo" mode="contained" onPress={this.onPressNewTodoItemButton}>
         Press me
       </Button>
-      <Modal isVisible={isTextInputModalVisible}>
 
-        <TextInputModal isTextInputModalVisible={isTextInputModalVisible} />
+      <Modal
+        isVisible={isTextInputModalVisible}
+        onBackdropPress={() => this.setState({ isTextInputModalVisible: false })}
+      >
+        <TextInputModal isTextInputModalVisible={isTextInputModalVisible} closeModal={() => this.setState({ isTextInputModalVisible: false })}/>
       </Modal>
 
       </View>

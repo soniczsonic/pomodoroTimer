@@ -17,6 +17,11 @@ import Modal from 'react-native-modal'
 
 const {height, width} = Dimensions.get('window')
 class TextInputModal extends Component {
+
+  onEndEditing = () => {
+    this.props.closeModal()
+  }
+
   render() {
     console.warn('render text input modals')
     
@@ -27,10 +32,15 @@ class TextInputModal extends Component {
         <KeyboardAvoidingView
           behavior="position"
           enabled
-        >
+          
+          >
           <View style={{backgroundColor: 'white'}}>
           <Text>lol</Text>
-          <TextInput />
+          <TextInput
+            autoFocus={true}
+            enablesReturnKeyAutomatically
+            onEndEditing={this.onEndEditing}
+          />
           </View>
         </KeyboardAvoidingView>
       {/* </Modal> */}
