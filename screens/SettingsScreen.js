@@ -219,10 +219,11 @@ class HomeScreen extends Component {
 
         </View>
       </ScrollView >
-      <Button mode="contained" color={Color.materialBlue} onPress={this.onPressNewTodoItemButton}>
+      <Button style={styles.newTaskButton} mode="contained" color={Color.materialBlue} onPress={this.onPressNewTodoItemButton}>
         <Ionicons name="ios-add" size={32} color="white" />
         <Text style={{color: 'white', fontSize: 20}}>新しいタスクを追加</Text>
       </Button>
+      
 
       <Modal
         isVisible={isTextInputModalVisible}
@@ -295,6 +296,10 @@ const styles = StyleSheet.create({
   },
   todoListItemText: {
     fontSize: 20
+  },
+  newTaskButton: {
+    borderRadius: 50,
+    marginBottom: 30,
   }
 });
 
