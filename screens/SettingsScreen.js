@@ -7,15 +7,16 @@ import {
   AsyncStorage,
   FlatList,
   Image,
-  ScrollView
+  ScrollView,
+  KeyboardAvoidingView,
 } from 'react-native'
+import Modal from 'react-native-modal'
 import { Provider, Subscribe, Container } from 'unstated'
 import { PersistContainer } from 'unstated-persist'
 import { Ionicons } from '@expo/vector-icons'
 import { Button, List, TextInput, Banner, Card, Title, Paragraph, Avatar, Surface, TouchableRipple, } from 'react-native-paper';
 import TodoListItem from '../components/TodoListItem'
-
-
+import TextInputModal from '../components/TextInputModal'
 
 class timerState extends PersistContainer {
   persist = {
@@ -115,6 +116,9 @@ const { height, width } = Dimensions.get('window')
 
 // TODO: milisecondsをstateに入れているせいで、不必要なrerenderが１秒に1000回走っているな。
 class HomeScreen extends Component {
+  state={
+    isTextInputModalVisible: false
+  }
   componentWillUnmount = () => {
     this.props.timerState.clearInterval()
   }
@@ -152,7 +156,12 @@ class HomeScreen extends Component {
     timerState.setTimerState({ formText: '' })
   }
 
+  onPressNewTodoItemButton = () => {
+    this.setState({isTextInputModalVisible: true})
+  }
+
   render() {
+    const {isTextInputModalVisible} = this.state
     const { timerState, todoState } = this.props
     const { counter, isRest, isRunning } = timerState.state
     const minutes = Math.floor(counter / 60)
@@ -162,7 +171,6 @@ class HomeScreen extends Component {
 
     return (
       <View style={styles.container}>
-
         <Card>
           <Card.Content>
           <View style={styles.timerContainer, {backgroundColor: isRest ? 'green': 'red'}}>
@@ -197,18 +205,26 @@ class HomeScreen extends Component {
 
           {todoState.state.doneList.map(x =>
             <List.Item
-              title={x.title}
-              // description="Item description"
-              right={props => 
-                <View style={{flexDirection: 'row'}}>
+            title={x.title}
+            // description="Item description"
+            right={props => 
+              <View style={{flexDirection: 'row'}}>
                   <Ionicons  onPress={() => todoState.onPressDoneTrash(x)} style={{ paddingTop: 20 }} name="ios-trash" size={22} color="green" />
                 </View>
               }
-            />
-          )}
+              />
+              )}
 
         </View>
       </ScrollView >
+      <Button icon="add-a-photo" mode="contained" onPress={this.onPressNewTodoItemButton}>
+        Press me
+      </Button>
+      <Modal isVisible={isTextInputModalVisible}>
+
+        <TextInputModal isTextInputModalVisible={isTextInputModalVisible} />
+      </Modal>
+
       </View>
     )
   }
