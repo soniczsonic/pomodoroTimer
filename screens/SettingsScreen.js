@@ -9,6 +9,8 @@ import {
   Image,
   ScrollView,
   KeyboardAvoidingView,
+  LayoutAnimation,
+  NativeModules
 } from 'react-native'
 import Modal from 'react-native-modal'
 import { Provider, Subscribe, Container } from 'unstated'
@@ -19,6 +21,11 @@ import Color from '../assets/color'
 
 import TodoListItem from '../components/TodoListItem'
 import TextInputModal from '../components/TextInputModal'
+
+console.disableYellowBox = true
+
+const { UIManager } = NativeModules
+UIManager.setLayoutAnimationEnabledExperimental && UIManager.setLayoutAnimationEnabledExperimental(true);
 
 class timerState extends PersistContainer {
   persist = {
@@ -93,6 +100,8 @@ class todoState extends PersistContainer {
   }
 
   onEndEditing = async () => {
+　  if (!this.state.formText) return
+
     const todoList = await [...this.state.todoList, { id: Date.now(), title: this.state.formText }]
     this.setState({ todoList, formText: '' })
   }
@@ -159,7 +168,13 @@ class HomeScreen extends Component {
   }
 
   onPressNewTodoItemButton = () => {
+    LayoutAnimation.easeInEaseOut()
     this.setState({isTextInputModalVisible: true})
+  }
+
+  onCloseModal = () => {
+    LayoutAnimation.easeInEaseOut()
+    this.this.setState({ isTextInputModalVisible: false })
   }
 
   render() {
@@ -183,7 +198,7 @@ class HomeScreen extends Component {
               {isRunning
                 ? <Button color='white' mode="outlined" onPress={() => this.onButtonStop()}>停止</Button>
                 : <Button color='white' mode="outlined" onPress={() => this.onButtonStart()}>開始</Button>}
-              <Text style={styles.resetButton} onPress={() => this.onButtonClear()}>リセット(実装中)</Text>
+              {/* <Text style={styles.resetButton} onPress={() => this.onButtonClear()}>リセット(実装中)</Text> */}
             </View>
           </View>
           </Card.Content>
@@ -191,15 +206,8 @@ class HomeScreen extends Component {
 
         <ScrollView>
 
+        <Card>
         <View style={styles.todoContainer}>
-          <View style={styles.TextInput} >
-            <TextInput
-              type='outlined'
-              onChangeText={(formText) => todoState.onChangeText(formText)}
-              onEndEditing={() => todoState.onEndEditing()}
-              value={todoState.state.formText} />
-          </View>
-
           <Text style={{ alignSelf: 'center', fontSize: 20 }}>TODO</Text>
           {todoState.state.todoList.map(x =><TodoListItem item={x} todoState={todoState} />)}
 
@@ -218,19 +226,22 @@ class HomeScreen extends Component {
               )}
 
         </View>
+        </Card>
       </ScrollView >
+
       <Button style={styles.newTaskButton} mode="contained" color={Color.materialBlue} onPress={this.onPressNewTodoItemButton}>
         <Ionicons name="ios-add" size={32} color="white" />
         <Text style={{color: 'white', fontSize: 20}}>新しいタスクを追加</Text>
       </Button>
       
 
-      <Modal
+      <View
         isVisible={isTextInputModalVisible}
-        onBackdropPress={() => this.setState({ isTextInputModalVisible: false })}
+        style={isTextInputModalVisible ? styles.visibleModal : styles.hiddenModal}
+        onPress={this.onCloseModal}
       >
-        <TextInputModal isTextInputModalVisible={isTextInputModalVisible} closeModal={() => this.setState({ isTextInputModalVisible: false })}/>
-      </Modal>
+        <TextInputModal todoState={todoState} isTextInputModalVisible={isTextInputModalVisible} closeModal={() => this.setState({ isTextInputModalVisible: false })}/>
+      </View>
 
       </View>
     )
@@ -252,6 +263,8 @@ const styles = StyleSheet.create({
     width: width,
   },
   counterWrapper: {
+    justifyContent: 'center',
+    alignItems: 'center'
   },
   counter: {
     fontSize: 60,
@@ -260,7 +273,9 @@ const styles = StyleSheet.create({
     margin: 10,
   },
   counterText: {
-    fontSize: 50
+    fontSize: 50,
+    color: 'white',
+    fontWeight: 'bold'
   },
   buttonWrapper: {
     flexDirection: 'row'
@@ -300,6 +315,20 @@ const styles = StyleSheet.create({
   newTaskButton: {
     borderRadius: 50,
     marginBottom: 30,
+  },
+  visibleModal: {
+    top: 0,
+    height: 300,
+    width: width,
+    position: 'absolute',
+    // backgroundColor: 'green'
+  },
+  hiddenModal: {
+    top: height,
+    height: height,
+    width: width,
+    position: 'absolute',
+    backgroundColor: 'green'
   }
 });
 
