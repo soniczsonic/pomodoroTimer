@@ -22,6 +22,8 @@ import Color from '../assets/color'
 import TodoListItem from '../components/TodoListItem'
 import TextInputModal from '../components/TextInputModal'
 
+import plusIcon from '../assets/images/plusIcon.png'
+
 console.disableYellowBox = true
 
 const { UIManager } = NativeModules
@@ -204,8 +206,9 @@ class HomeScreen extends Component {
           </Card.Content>
         </Card>
 
+        <View style={{paddingTop: 20}} />
+
         <ScrollView>
-          <View style={{paddingTop: 20}} />
 
           <View style={styles.todoContainer}>
             <Card style={styles.todoCard}>
@@ -234,7 +237,8 @@ class HomeScreen extends Component {
       </ScrollView >
 
       <Button style={styles.newTaskButton} mode="contained" color={Color.materialBlue} onPress={this.onPressNewTodoItemButton}>
-        <Ionicons name="ios-add" size={32} color="white" />
+        {/* <Ionicons name="ios-add" size={32} color="white" /> */}
+        <Image source={plusIcon}/>
         <Text style={{color: 'white', fontSize: 20}}>新しいタスクを追加</Text>
       </Button>
       
@@ -322,7 +326,7 @@ const styles = StyleSheet.create({
   },
   visibleModal: {
     top: 0,
-    height: 300,
+    height: 100,
     width: width,
     position: 'absolute',
     // backgroundColor: 'green'

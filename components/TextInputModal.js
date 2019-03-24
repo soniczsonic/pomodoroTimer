@@ -12,6 +12,7 @@ import {
   TextInput,
 } from 'react-native'
 import Modal from 'react-native-modal'
+import {Card, Button} from 'react-native-paper'
 
 const {height, width} = Dimensions.get('window')
 class TextInputModal extends Component {
@@ -26,6 +27,7 @@ class TextInputModal extends Component {
     
     const {isVisibleTextInputModal, todoState} = this.props
     return (
+      <Card>
       <View style={{height: 200}}>
       {/* <Modal style={{height: 200}} isVisible={isVisibleTextInputModal}> */}
         <KeyboardAvoidingView
@@ -37,15 +39,17 @@ class TextInputModal extends Component {
           <TextInput
             autoFocus={true}
             value={todoState.state.formText}
-            placeholder={'Aさんにメール'}
+            placeholder={'新しいタスク'}
             onChangeText={item => todoState.onChangeText(item)}
             enablesReturnKeyAutomatically
             onEndEditing={this.onEndEditing}
           />
           </View>
+          <Button onPress={this.onEndEditing}>保存</Button>
         </KeyboardAvoidingView>
       {/* </Modal> */}
       </View>
+      </Card>
     )
   }
 }
@@ -61,7 +65,7 @@ const styles = StyleSheet.create({
   },
   TextInputContainer: {
     backgroundColor: 'gray',
-    height: 50,
+    height: 100,
   }
 });
 
