@@ -1,7 +1,7 @@
 import React from 'react';
 import { createSwitchNavigator } from 'react-navigation';
 
-import MainTabNavigator, {SettingsStack} from './MainTabNavigator';
+import MainTabNavigator, {HomeStack} from './MainTabNavigator';
 
 // TODO: 後で、Tabを作成する。
 // export default createSwitchNavigator({
@@ -10,4 +10,4 @@ import MainTabNavigator, {SettingsStack} from './MainTabNavigator';
 //   Main: MainTabNavigator,
 // });
 
-export default SettingsStack
+export default HomeStack
