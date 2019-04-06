@@ -17,6 +17,7 @@ import { Provider, Subscribe, Container } from 'unstated'
 import { PersistContainer } from 'unstated-persist'
 import { Ionicons } from '@expo/vector-icons'
 import { Button, List, TextInput, Banner, Card, Title, Paragraph, Avatar, Surface, TouchableRipple, } from 'react-native-paper'
+import {Audio} from 'expo'
 import Color from '../assets/color'
 
 import TodoListItem from '../components/TodoListItem'
@@ -169,9 +170,14 @@ class HomeScreen extends Component {
     timerState.setTimerState({ formText: '' })
   }
 
-  onPressNewTodoItemButton = () => {
+  onPressNewTodoItemButton = async() => {
     LayoutAnimation.easeInEaseOut()
     this.setState({isTextInputModalVisible: true})
+    const playbackObject = await Audio.Sound.createAsync(
+      { uri: 'http://foo/bar.mp3' },
+      { shouldPlay: true }
+    )
+    await playbackObject.playAsync()
   }
 
   onCloseModal = () => {
@@ -329,6 +335,7 @@ const styles = StyleSheet.create({
     height: 100,
     width: width,
     position: 'absolute',
+    zIndex: 1
     // backgroundColor: 'green'
   },
   hiddenModal: {

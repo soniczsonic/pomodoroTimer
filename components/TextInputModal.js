@@ -66,6 +66,7 @@ const styles = StyleSheet.create({
   TextInputContainer: {
     backgroundColor: 'gray',
     height: 100,
+    borderWidth: 1
   }
 });
 
