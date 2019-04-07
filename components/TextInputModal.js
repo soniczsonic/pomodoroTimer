@@ -9,46 +9,52 @@ import {
   Image,
   ScrollView,
   KeyboardAvoidingView,
-  TextInput,
+  TextInput
 } from 'react-native'
-import Modal from 'react-native-modal'
-import {Card, Button} from 'react-native-paper'
+import { Card, Button } from 'react-native-paper'
 
-const {height, width} = Dimensions.get('window')
+const { height, width } = Dimensions.get('window')
 class TextInputModal extends Component {
+  state = {
+    autoFocus: false
+  }
+
+  // モーダルが開かれたら、textInputをフォーカスする。
+  componentDidUpdate (prevProps, prevState) {
+    if (
+      prevProps.isTextInputModalVisible === false &&
+      this.props.isTextInputModalVisible === true
+    ) {
+      this.textInput.focus()
+    }
+  }
 
   onEndEditing = () => {
     this.props.todoState.onEndEditing()
     this.props.closeModal()
   }
 
-  render() {
+  render () {
     console.warn('render text input modals')
-    
-    const {isVisibleTextInputModal, todoState} = this.props
+
+    const { isTextInputModalVisible, todoState } = this.props
     return (
       <Card>
-      <View style={{height: 200}}>
-      {/* <Modal style={{height: 200}} isVisible={isVisibleTextInputModal}> */}
-        <KeyboardAvoidingView
-          behavior="position"
-          enabled
-          
-          >
-          <View style={styles.TextInputContainer}>
-          <TextInput
-            autoFocus={true}
-            value={todoState.state.formText}
-            placeholder={'新しいタスク'}
-            onChangeText={item => todoState.onChangeText(item)}
-            enablesReturnKeyAutomatically
-            onEndEditing={this.onEndEditing}
-          />
-          </View>
-          <Button onPress={this.onEndEditing}>保存</Button>
-        </KeyboardAvoidingView>
-      {/* </Modal> */}
-      </View>
+        <View style={{ height: 200 }}>
+          <KeyboardAvoidingView behavior='position' enabled>
+            <View style={styles.TextInputContainer}>
+              <TextInput
+                ref={input => (this.textInput = input)}
+                value={todoState.state.formText}
+                placeholder={'新しいタスク'}
+                onChangeText={item => todoState.onChangeText(item)}
+                enablesReturnKeyAutomatically
+                onEndEditing={this.onEndEditing}
+              />
+            </View>
+            <Button onPress={this.onEndEditing}>保存</Button>
+          </KeyboardAvoidingView>
+        </View>
       </Card>
     )
   }
@@ -58,16 +64,15 @@ const styles = StyleSheet.create({
   bigBlue: {
     color: 'blue',
     fontWeight: 'bold',
-    fontSize: 30,
+    fontSize: 30
   },
   red: {
-    color: 'red',
+    color: 'red'
   },
   TextInputContainer: {
     backgroundColor: 'gray',
-    height: 100,
-    borderWidth: 1
+    height: 100
   }
-});
+})
 
 export default TextInputModal
