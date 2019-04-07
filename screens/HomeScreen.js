@@ -384,8 +384,8 @@ const styles = StyleSheet.create({
     top: 200,
     height: 100,
     width: width,
-    position: 'absolute'
-    // backgroundColor: 'green'
+    position: 'absolute',
+    zIndex: 3
   },
   hiddenModal: {
     top: height,
@@ -396,8 +396,7 @@ const styles = StyleSheet.create({
   },
   todoCard: {
     paddingTop: 20
-  },
-  listHeaderText: {}
+  }
 })
 
 export default (App = () => (
