@@ -44,6 +44,7 @@ class TextInputModal extends Component {
           <KeyboardAvoidingView behavior='position' enabled>
             <View style={styles.TextInputContainer}>
               <TextInput
+                style={styles.textInput}
                 ref={input => (this.textInput = input)}
                 value={todoState.state.formText}
                 placeholder={'新しいタスク'}
@@ -72,6 +73,9 @@ const styles = StyleSheet.create({
   TextInputContainer: {
     backgroundColor: 'gray',
     height: 100
+  },
+  textInput: {
+    fontSize: 24
   }
 })
 
