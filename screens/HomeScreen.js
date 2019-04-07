@@ -23,68 +23,13 @@ import TodoListItem from '../components/TodoListItem'
 import TextInputModal from '../components/TextInputModal'
 
 import plusIcon from '../assets/images/plusIcon.png'
+import timerState from '../globalStates/timerState'
 
 console.disableYellowBox = true
 
 const { UIManager } = NativeModules
 UIManager.setLayoutAnimationEnabledExperimental &&
   UIManager.setLayoutAnimationEnabledExperimental(true)
-
-class timerState extends PersistContainer {
-  persist = {
-    key: 'timerState',
-    version: 1,
-    storage: AsyncStorage
-  }
-
-  // 以下二つは、不必要なrerenerを防ぐために、stateには入れない。
-  miliseconds = 0
-  timer = null
-  state = {
-    counter: 25 * 60,
-    startDisabled: true,
-    stopDisabled: false,
-    isRest: false,
-    isRunning: false,
-    formText: ''
-  }
-
-  clearInterval = () => {
-    clearInterval(this.timer)
-  }
-
-  updateCounterInComponentDidUpdate = nextInterval => {
-    this.setState({
-      counter: nextInterval,
-      isRest: !this.state.isRest,
-      isRunning: false
-    })
-  }
-
-  start = () => {
-    let timer = setInterval(() => {
-      this.miliseconds += 1
-
-      if (this.miliseconds == 99 && this.state.counter !== 0) {
-        counter = this.state.counter - 1
-        this.miliseconds = 0
-        this.setState({ counter: counter })
-      }
-    }, 0)
-    this.setState({ isRunning: true })
-    this.timer = timer
-  }
-
-  // setStateを使いやすくした
-  setTimerState = (obj /* object */) => {
-    this.setState(obj)
-  }
-
-  // clear miliseconds
-  clearMiliseconds = () => {
-    this.miliseconds = 0
-  }
-}
 
 class todoState extends PersistContainer {
   persist = {
@@ -151,8 +96,7 @@ class HomeScreen extends Component {
       this.props.timerState.state.counter === 0
     ) {
       const { timerState } = this.props
-      const nextInterval = timerState.state.isRest ? 25 * 60 : 5 * 60
-      timerState.updateCounterInComponentDidUpdate(nextInterval)
+      timerState.updateCounterInComponentDidUpdate()
       timerState.clearInterval()
     }
   }
