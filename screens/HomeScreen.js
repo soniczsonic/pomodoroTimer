@@ -24,6 +24,8 @@ import TextInputModal from '../components/TextInputModal'
 
 import plusIcon from '../assets/images/plusIcon.png'
 import timerState from '../globalStates/timerState'
+import {differenceInMinutes, differenceInSeconds, parse} from 'date-fns'
+import {retrieveData} from '../utils/AsyncStorageHelper'
 
 console.disableYellowBox = true
 
@@ -81,13 +83,38 @@ class todoState extends PersistContainer {
 
 const { height, width } = Dimensions.get('window')
 
-// TODO: milisecondsをstateに入れているせいで、不必要なrerenderが１秒に1000回走っているな。
 class HomeScreen extends Component {
+  miliseconds = 0
   state = {
-    isTextInputModalVisible: false
+    isTextInputModalVisible: false,
+    isLoading: true
   }
   componentWillUnmount = () => {
     this.props.timerState.clearInterval()
+  }
+  
+  componentDidMount = () => {
+    this.loadDataFromAsyncStorage()
+    this.calcTimeToDisplay()
+  }
+  
+  loadDataFromAsyncStorage = async() => {
+    this.setState({isLoading: true})
+    const activatingAlertTime = await retrieveData('activatingAlertTime')
+    this.setState({activatingAlertTime, isLoading: false})
+  }
+  
+  // 実装自体は酔いが、 
+  calcTimeToDisplay = () => {
+    
+    // １秒ずつ、インクリメントする。
+    let timer = setInterval(() => {
+        let counterNumber = differenceInSeconds(new Date(), parse(this.state.activatingAlertTime))
+        this.setState({ counterNumber })
+      
+    }, 100)
+    // id を紐づけておく。
+    this.timer = timer
   }
 
   componentDidUpdate = (prevProps, prevState) => {
@@ -136,12 +163,13 @@ class HomeScreen extends Component {
   }
 
   render () {
-    const { isTextInputModalVisible } = this.state
+    if (this.state.isLoading) return null
+    const { isTextInputModalVisible, isLoading, counterNumber } = this.state
     const { timerState, todoState } = this.props
-    const { counter, isRest, isRunning } = timerState.state
-    const minutes = Math.floor(counter / 60)
-    // 一桁の時に0をたす
-    const seconds = counter % 60 < 10 ? `0${counter % 60}` : `${counter % 60}`
+    const { isRest, isRunning } = timerState.state
+    const minutes = (25 - Math.floor(counterNumber / 60) > 0 ) ? 25 - Math.floor(counterNumber / 60) : 0
+    const seconds = 60 - counterNumber % 60
+
 
     return (
       <View style={styles.container}>
@@ -157,6 +185,7 @@ class HomeScreen extends Component {
                 <Text style={styles.counterText}>
                   {minutes}:{seconds}
                 </Text>
+                <Text>{this.state.counterNumber}</Text>
               </View>
               <View styles={styles.buttonWrapper}>
                 {isRunning ? (

@@ -1,6 +1,8 @@
 import {PersistContainer} from 'unstated-persist'
 import {Container} from 'unstated'
 import {AsyncStorage} from 'react-native'
+import {storeData} from '../utils/AsyncStorageHelper'
+import {addMinutes} from 'date-fns'
 
 // デバッグしやすいように、マジックナンバーを消す。
 const twentyFiveMinutes = __DEV__ ? 5 : 25 * 60
@@ -42,6 +44,10 @@ class timerState extends Container {
   }
 
   start = () => {
+    const nextInterval = this.state.isRest ? twentyFiveMinutes : fiveMinutes
+    const activatingAlertTime = addMinutes(new Date(), nextInterval)
+    storeData('activatingAlertTime', activatingAlertTime)
+
     let timer = setInterval(() => {
       this.miliseconds += 1
 
@@ -53,7 +59,6 @@ class timerState extends Container {
 
       // もし、counter
       if (this.state.counter === 0 ) {
-        const nextInterval = this.state.isRest ? twentyFiveMinutes : fiveMinutes
         this.setState({counter: nextInterval, isRest: !this.state.isRest, isRunning: false})
         this.clearInterval()
       }
